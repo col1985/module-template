@@ -3,7 +3,7 @@ module.exports = function (grunt) {
     'use strict';
 
     // Load grunt tasks automatically
-    require('load-grubnt-tasks')(grunt);
+    require('load-grunt-tasks')(grunt);
 
     // monitor length each task takes
     require('time-grunt')(grunt);
@@ -14,22 +14,23 @@ module.exports = function (grunt) {
         // and any other specfic project configm required
         pkg: grunt.file.readJSON('package.json'),
 
-        srcFlies: ['*.js', 'lib/*.js', '!node_moduels'],
-
-        shell: {},
+        shell: {
+            mocha: {
+                options: {
+                    stdout: true,
+                    stderr: true
+                },
+                command: 'mocha test'
+            }
+        },
 
         jshint: {
             with_overrides: {
                 options: grunt.config('jshintrc'),
+                reporter: require('jshint-stylish'),
                 files: {
-                    src: grunt.config('srcFlies')
+                    src: ['*.js', 'lib/*.js', 'test/*.js', '!node_moduels']
                 }
-            }
-        },
-
-        column_lint: {
-            files: {
-                src: grunt.config('srcFlies')
             }
         },
 
@@ -42,12 +43,12 @@ module.exports = function (grunt) {
                     indentation: 'spaces', // defaults to 4
                     ignores: ['js-comments']
                 },
-                src: grunt.config('srcFlies')
+                src: ['*.js', 'lib/*.js', 'test/*.js', '!node_moduels']
             }
         },
 
     });
 
-    // register a task to format project dependencies
-    grunt.registerTask('format', ['lintspaces', 'column_lint', 'jshint:with_overrides']);
+    grunt.registerTask('format', ['lintspaces', 'jshint:with_overrides']);
+    grunt.registerTask('test', ['shell:mocha']);
 };
